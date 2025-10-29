@@ -44,17 +44,17 @@ def benchmark():
     # args = parser.parse_args()
 
     vocab_size = 10000
-    context_len = 512
+    context_len = 128
     batch_size = 4
-    # d_models = [768, 1024, 1280, 1600, 2560]
-    d_models = [768, 1024, 1280]
-    # d_ffs = [3072, 4096, 5120, 6400, 10240]
-    d_ffs = [3072, 4096, 5120]
-    # num_layers = [12, 24, 36, 48, 32]
-    num_layers = [12, 24, 36]
-    # num_heads = [12, 16, 20, 25, 32]
-    num_heads = [12, 16, 20]
-    warmup_steps = 5
+    d_models = [768, 1024, 1280, 1600, 2560]
+    # d_models = [768, 1024, 1280]
+    d_ffs = [3072, 4096, 5120, 6400, 10240]
+    # d_ffs = [3072, 4096, 5120]
+    num_layers = [12, 24, 36, 48, 32]
+    # num_layers = [12, 24, 36]
+    num_heads = [12, 16, 20, 25, 32]
+    # num_heads = [12, 16, 20]
+    warmup_steps = 2
     training_steps = 10
     inference_only = False
     batch_size = 4
@@ -63,7 +63,7 @@ def benchmark():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
     x = torch.randint(low=0, high=vocab_size, size=(batch_size, context_len), device=device)
-    y = torch.cat([x[:, 1:], torch.randint(low=0, high=vocab_size, size=(batch_size, 1))], dim=1, device=device)
+    y = torch.cat([x[:, 1:], torch.randint(low=0, high=vocab_size, size=(batch_size, 1), device=device)], dim=1)
 
     column_names = ["d_model", "d_ff", "num_layers", "num_heads",
         "training_forward_time_mean", "training_forward_time_std",
@@ -161,4 +161,4 @@ if __name__ == "__main__":
     timing_df = benchmark()
     if not os.path.exists("results"):
         os.makedirs("results")
-    timing_df.to_csv("results/timing_results.csv")
+    timing_df.to_csv("results/timing_results_with_warmup_2.csv")
